@@ -1,16 +1,10 @@
 # lightning_chat
 
-Messaging application made with Flutter and Google Firebase.
+A work in progress instant messaging application made with Flutter and Firebase Cloud Firestore.
 
-## Getting Started
+### What I'm learning by developing this application:
+- How to power applications using Firebase Firestore
+- How to authenticate users using Firebase Firestore
+- How to implement animations in Flutter
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
