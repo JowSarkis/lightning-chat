@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "875108083747",
+    "firebase_url": "https://lightning-chat-5bb8b.firebaseio.com",
+    "project_id": "lightning-chat-5bb8b",
+    "storage_bucket": "lightning-chat-5bb8b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875108083747:android:0afa56ab68d37a4b12e996",
+        "android_client_info": {
+          "package_name": "dev.jsfsarkis.lightning_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "875108083747-4qr6t8hm74maqn1t3kcke2kee91b8sv4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9kS7g7plFk_QgxG0pggPRUpyGvmgQ1q4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "875108083747-4qr6t8hm74maqn1t3kcke2kee91b8sv4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
