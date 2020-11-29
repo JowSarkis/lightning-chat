@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final _firestore = FirebaseFirestore.instance;
+User loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   static const String id = 'chat_screen';
@@ -17,7 +18,6 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  User loggedInUser;
   String textMessage;
 
   @override
@@ -35,14 +35,6 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     } catch (e) {
       print(e);
-    }
-  }
-
-  void messagesStream() async {
-    await for (var snapshot in _firestore.collection('messages').snapshots()) {
-      for (var message in snapshot.docs) {
-        print(message.data());
-      }
     }
   }
 
@@ -96,6 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _firestore.collection('messages').add({
                           'text': textMessage,
                           'sender': loggedInUser.email,
+                          'timestamp' : FieldValue.serverTimestamp(),
                         });
                       },
                       child: Text(
@@ -118,7 +111,7 @@ class MessagesStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('messages').snapshots(),
+      stream: _firestore.collection('messages').orderBy('timestamp', descending: false).snapshots(),
       builder: (context, snapshot) {
         List<MessageBubble> messageBubbles = [];
         if (!snapshot.hasData) {
@@ -128,21 +121,24 @@ class MessagesStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data.docs;
+        final messages = snapshot.data.docs.reversed;
         for (var message in messages) {
           final messageText = message.data()['text'];
           final messageSender = message.data()['sender'];
 
+          final currentUser = loggedInUser.email;
+
           final messageBubble = MessageBubble(
             text: messageText,
             sender: messageSender,
+            isCurrentUser: currentUser == messageSender,
           );
           messageBubbles.add(messageBubble);
         }
         return Expanded(
           child: ListView(
-            padding: EdgeInsets.symmetric(
-                horizontal: 10.0, vertical: 20.0),
+            reverse: true,
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
             children: messageBubbles,
           ),
         );
@@ -151,40 +147,57 @@ class MessagesStream extends StatelessWidget {
   }
 }
 
-
-
 class MessageBubble extends StatelessWidget {
   final String sender;
   final String text;
+  final bool isCurrentUser;
 
-  MessageBubble({@required this.text, @required this.sender});
+  MessageBubble(
+      {@required this.text,
+      @required this.sender,
+      @required this.isCurrentUser});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(sender, style: TextStyle(
-            color: Colors.black54,
-            fontSize: 12.0,
-          ),),
-          Material(
-          borderRadius: BorderRadius.circular(30.0),
-          elevation: 5.0,
-          color: Colors.lightBlueAccent,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            child: Text(
-              text,
+          crossAxisAlignment:
+              isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Text(
+              sender,
               style: TextStyle(
-                fontSize: 15.0,
+                color: Colors.black54,
+                fontSize: 12.0,
               ),
             ),
-          ),
-        ),
-      ]),
+            Padding(
+              padding: EdgeInsets.only(top: 2.0),
+              child: Material(
+                borderRadius: isCurrentUser
+                    ? BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        bottomLeft: Radius.circular(30.0),
+                        bottomRight: Radius.circular(30.0))
+                    : BorderRadius.only(
+                        topRight: Radius.circular(30.0),
+                        bottomLeft: Radius.circular(30.0),
+                        bottomRight: Radius.circular(30.0)),
+                elevation: 5.0,
+                color: isCurrentUser ? Colors.lightBlueAccent : Colors.blueAccent,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 15.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ]),
     );
   }
 }
